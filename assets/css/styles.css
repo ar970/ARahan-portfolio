@@ -79,7 +79,12 @@
 }
 
 [data-cursor] {
-  cursor: none !important;
+  cursor: default;
+}
+a[data-cursor],
+button[data-cursor],
+[data-cursor-text] {
+  cursor: pointer;
 }
 
 * {
