@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 360" role="img" aria-label="Arahan Singh avatar">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2f8bff"/>
+      <stop offset="1" stop-color="#7fb8ff"/>
+    </linearGradient>
+    <linearGradient id="lens" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#7b2ff7"/>
+      <stop offset="1" stop-color="#f542a7"/>
+    </linearGradient>
+    <linearGradient id="skin" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#d9955f"/>
+      <stop offset="1" stop-color="#c07d47"/>
+    </linearGradient>
+  </defs>
+  <rect width="280" height="360" fill="url(#sky)"/>
+  <!-- soft clouds -->
+  <ellipse cx="52" cy="70" rx="46" ry="18" fill="#ffffff" opacity="0.85"/>
+  <ellipse cx="232" cy="120" rx="52" ry="20" fill="#ffffff" opacity="0.8"/>
+  <ellipse cx="40" cy="300" rx="48" ry="18" fill="#ffffff" opacity="0.7"/>
+  <!-- neck -->
+  <rect x="120" y="250" width="40" height="60" rx="18" fill="url(#skin)"/>
+  <!-- face -->
+  <path d="M78 168 C78 108 202 108 202 168 C202 236 168 276 140 276 C112 276 78 236 78 168 Z" fill="url(#skin)"/>
+  <!-- ears -->
+  <ellipse cx="80" cy="188" rx="12" ry="18" fill="url(#skin)"/>
+  <ellipse cx="200" cy="188" rx="12" ry="18" fill="url(#skin)"/>
+  <!-- hair -->
+  <path d="M72 158 C74 96 208 96 208 158 C208 138 196 120 176 112 C188 128 186 140 186 140 C176 120 150 112 140 112 C120 112 96 122 90 150 C86 132 80 140 72 158 Z" fill="#141210"/>
+  <path d="M90 150 C104 120 176 120 190 150 L190 132 C168 110 112 110 90 132 Z" fill="#1d1a17"/>
+  <!-- smiley clip -->
+  <circle cx="104" cy="128" r="9" fill="#ffd23f"/>
+  <circle cx="100" cy="126" r="1.5" fill="#141210"/><circle cx="108" cy="126" r="1.5" fill="#141210"/>
+  <path d="M100 131 Q104 134 108 131" stroke="#141210" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  <!-- lightning clip -->
+  <path d="M170 116 l-7 12 l6 0 l-6 12 l14 -16 l-6 0 l7 -8 z" fill="#ffd23f"/>
+  <!-- sunglasses -->
+  <rect x="86" y="176" width="108" height="34" rx="12" fill="#ff6a1a"/>
+  <rect x="94" y="182" width="92" height="22" rx="9" fill="url(#lens)"/>
+  <rect x="94" y="184" width="92" height="7" rx="3.5" fill="#ffffff" opacity="0.28"/>
+  <rect x="66" y="184" width="22" height="9" rx="4" fill="#ff6a1a"/>
+  <rect x="192" y="184" width="22" height="9" rx="4" fill="#ff6a1a"/>
+  <!-- nose + mouth -->
+  <path d="M140 210 L134 230 Q140 234 146 230 Z" fill="#a86636"/>
+  <path d="M126 244 Q140 252 154 244" stroke="#7d4a25" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <!-- beard -->
+  <path d="M104 236 C104 268 176 268 176 236 C176 258 158 276 140 276 C122 276 104 258 104 236 Z" fill="#141210" opacity="0.92"/>
+  <path d="M132 226 h16 v22 h-16 z" fill="#141210" opacity="0.9"/>
+</svg>
