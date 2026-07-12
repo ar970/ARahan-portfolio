@@ -38,14 +38,19 @@ python3 -m http.server 8000
 # then open http://localhost:8000
 ```
 
-## ⚠️ Placeholders to fill in
+## Contact links
 
-Links were intentionally left as clearly-marked placeholders. Search for `href="#"`
-and the `TODO` comments, then drop in the real values:
+Real links are wired across the footer (every page), `contact.html`, and `resume.html`:
 
-- **Footer** (all pages, in `assets` chrome / each `*.html`): LinkedIn, GitHub, Instagram.
-- **`contact.html`**: email, LinkedIn, GitHub, Instagram (in `.contact-details`).
-- **`resume.html`**: email, phone, LinkedIn, GitHub (in `.resume-contact`).
+- **Email** — arahansingh2000@gmail.com
+- **Phone** — +91 92895 36437
+- **LinkedIn** — https://www.linkedin.com/in/arahansingh
+- **Instagram** — https://www.instagram.com/arahxan/
+
+The contact form's **Send the brief** button opens the visitor's email app with the
+brief pre-filled to that address (`data-email` on the `.brief-form`). To collect
+submissions server-side instead, point the form at a service like Formspree/Getform.
+No GitHub link is used — add one to the footer socials if you create a profile.
 
 ## Swapping the brand images
 

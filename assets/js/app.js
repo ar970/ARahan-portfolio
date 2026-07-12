@@ -200,6 +200,20 @@
         form.reportValidity();
         return;
       }
+      const email = form.getAttribute("data-email");
+      if (email) {
+        const fd = new FormData(form);
+        const name = (fd.get("name") || "").toString().trim();
+        const subject = `Project brief${name ? " from " + name : ""}`;
+        const body =
+          `Name: ${fd.get("name") || ""}\n` +
+          `Email: ${fd.get("email") || ""}\n` +
+          `Company: ${fd.get("company") || ""}\n` +
+          `Topic: ${fd.get("topic") || ""}\n\n` +
+          `${fd.get("message") || ""}`;
+        window.location.href =
+          `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      }
       form.classList.add("submitted");
       const note = form.querySelector(".success-note");
       if (note) note.classList.add("visible");
