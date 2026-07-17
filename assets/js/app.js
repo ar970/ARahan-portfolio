@@ -175,6 +175,10 @@
         })
       );
     }
+    // expandable cards: show description on click
+    document.querySelectorAll(".works-archive .completed-card").forEach((card) =>
+      on(card, "click", () => card.classList.toggle("open"))
+    );
     // filters
     const filters = document.querySelectorAll(".filter[data-filter]");
     if (!filters.length) return;
