@@ -23,6 +23,7 @@
     contactForm();
     mascot();
     heroLetters();
+    heroDoodles();
     scrollProgress();
     parallaxStickies();
     tiltCards();
@@ -33,17 +34,14 @@
     celebrateFirsts();
   }
 
-  /* ---------- opening stamp intro (home, once per session) ---------- */
+  /* ---------- opening stamp intro (home, every visit) ---------- */
   function introOverlay() {
     const html = document.documentElement;
     const isHome = !!document.querySelector(".home-page");
-    let seen = "";
-    try { seen = sessionStorage.getItem("ar-intro") || ""; } catch (e) { seen = "1"; }
-    if (!isHome || seen || prefersReduced || location.hash === "#nointro") {
+    if (!isHome || prefersReduced || location.hash === "#nointro") {
       html.classList.add("intro-done");
       return;
     }
-    try { sessionStorage.setItem("ar-intro", "1"); } catch (e) {}
 
     const ov = document.createElement("div");
     ov.className = "intro-overlay grid-paper";
@@ -63,6 +61,12 @@
       finished = true;
       html.classList.add("intro-done");
       ov.classList.add("done");
+      // celebrate the reveal with a paper-confetti shower
+      setTimeout(() => {
+        confettiBurst(window.innerWidth * 0.5, window.innerHeight * 0.3, 30);
+        confettiBurst(window.innerWidth * 0.22, window.innerHeight * 0.42, 14);
+        confettiBurst(window.innerWidth * 0.78, window.innerHeight * 0.42, 14);
+      }, 350);
       setTimeout(() => ov.remove(), 800);
     };
     on(ov, "click", finish);
@@ -122,7 +126,7 @@
     if (prefersReduced || !finePointer) return;
     const notes = document.querySelectorAll(".home-hero .sticky");
     if (!notes.length) return;
-    const factors = [0.055, -0.04, 0.085];
+    const factors = [0.12, -0.09, 0.17];
     let ticking = false;
     on(window, "scroll", () => {
       if (!ticking) {
@@ -152,8 +156,8 @@
           const px = (e.clientX - r.left) / r.width - 0.5;
           const py = (e.clientY - r.top) / r.height - 0.5;
           card.style.transform =
-            "perspective(950px) rotateX(" + (-py * 4.5).toFixed(2) + "deg) rotateY(" +
-            (px * 5.5).toFixed(2) + "deg) translateY(-4px)";
+            "perspective(900px) rotateX(" + (-py * 7).toFixed(2) + "deg) rotateY(" +
+            (px * 8).toFixed(2) + "deg) translateY(-6px)";
           raf = null;
         });
       });
@@ -169,10 +173,32 @@
         const r = el.getBoundingClientRect();
         const dx = (e.clientX - (r.left + r.width / 2)) / r.width;
         const dy = (e.clientY - (r.top + r.height / 2)) / r.height;
-        el.style.transform = "translate(" + (dx * 10).toFixed(1) + "px," + (dy * 7).toFixed(1) + "px)";
+        el.style.transform = "translate(" + (dx * 15).toFixed(1) + "px," + (dy * 10).toFixed(1) + "px)";
       });
       on(el, "mouseleave", () => { el.style.transform = ""; });
     });
+  }
+
+  /* ---------- floating pen doodles in the hero ---------- */
+  function heroDoodles() {
+    if (prefersReduced) return;
+    const hero = document.querySelector(".home-hero");
+    if (!hero) return;
+    const layer = document.createElement("div");
+    layer.className = "doodle-layer";
+    layer.setAttribute("aria-hidden", "true");
+    layer.innerHTML =
+      '<span class="doodle doodle-fill" style="top:14%;left:45%;width:30px;color:var(--accent)">' +
+      '<svg viewBox="0 0 40 40"><path d="M20 2l4.5 13.5L38 20l-13.5 4.5L20 38l-4.5-13.5L2 20l13.5-4.5z"/></svg></span>' +
+      '<span class="doodle" style="top:64%;left:4%;width:44px;color:var(--pen)">' +
+      '<svg viewBox="0 0 48 48"><path d="M6 42C10 20 30 8 44 10M36 6l8 4-5 8"/></svg></span>' +
+      '<span class="doodle" style="top:26%;left:88%;width:36px;color:var(--pen)">' +
+      '<svg viewBox="0 0 40 40"><path d="M20 4v32M4 20h32M8 8l24 24M32 8L8 32"/></svg></span>' +
+      '<span class="doodle" style="top:82%;left:56%;width:52px;color:var(--accent)">' +
+      '<svg viewBox="0 0 56 32"><path d="M2 28C8 6 20 4 24 14s14 12 18-2 10-8 12 4"/></svg></span>' +
+      '<span class="doodle doodle-fill" style="top:8%;left:8%;width:18px;color:var(--pen)">' +
+      '<svg viewBox="0 0 40 40"><path d="M20 2l4.5 13.5L38 20l-13.5 4.5L20 38l-4.5-13.5L2 20l13.5-4.5z"/></svg></span>';
+    hero.appendChild(layer);
   }
 
   /* ---------- stats count up when scrolled into view ---------- */
@@ -242,10 +268,10 @@
   }
 
   /* ---------- paper confetti ---------- */
-  function confettiBurst(x, y) {
+  function confettiBurst(x, y, count) {
     if (prefersReduced || !("animate" in Element.prototype)) return;
     const colors = ["#fff176", "#b3e5fc", "#f8bbd0", "#c8e6c9", "#ff6b2b", "#1565c0"];
-    for (let i = 0; i < 20; i++) {
+    for (let i = 0; i < (count || 20); i++) {
       const p = document.createElement("i");
       p.className = "confetti-bit";
       p.style.left = x + "px";
@@ -328,12 +354,20 @@
       items.forEach((el) => el.classList.add("revealed"));
       return;
     }
+    // cascade the work grid: cards land one after another
+    document.querySelectorAll(".completed-grid .completed-card").forEach((c, i) => {
+      c.style.transitionDelay = (i % 3) * 110 + "ms";
+    });
     const io = new IntersectionObserver(
       (entries) => {
         entries.forEach((e) => {
           if (e.isIntersecting) {
             e.target.classList.add("revealed");
             io.unobserve(e.target);
+            // drop stagger delays once landed so hover stays snappy
+            if (e.target.style.transitionDelay) {
+              setTimeout(() => { e.target.style.transitionDelay = ""; }, 1100);
+            }
           }
         });
       },
@@ -594,16 +628,55 @@
       "Want the full story? The About page has it.",
       "Two 1st-place wins at IVB. Not bad, right? 🏆"
     ];
-    let idx = 0, muted = false, asleep = false;
+    let idx = 0, asleep = false, spokenOnce = false;
+    let muted = false;
+    try { muted = localStorage.getItem("ar-voice") === "off"; } catch (e) {}
+    if (muteBtn) muteBtn.textContent = muted ? "🔇" : "🔊";
+
+    const canSpeak = "speechSynthesis" in window && "SpeechSynthesisUtterance" in window;
+    if (canSpeak) {
+      // warm the async voice list so the first utterance gets a nice voice
+      speechSynthesis.getVoices();
+      on(speechSynthesis, "voiceschanged", () => speechSynthesis.getVoices());
+    }
+
+    function speak(msg) {
+      if (muted || asleep || !canSpeak) return;
+      try {
+        speechSynthesis.cancel();
+        const u = new SpeechSynthesisUtterance(msg.replace(/[🚀🏆↗]/g, ""));
+        u.rate = 1.03;
+        u.pitch = 1.25;
+        u.volume = 0.9;
+        const voices = speechSynthesis.getVoices();
+        const pick =
+          voices.find((v) => /^en/i.test(v.lang) && /female|zira|samantha|google (uk english female|us english)/i.test(v.name)) ||
+          voices.find((v) => /^en/i.test(v.lang));
+        if (pick) u.voice = pick;
+        speechSynthesis.speak(u);
+        spokenOnce = true;
+      } catch (e) {}
+    }
 
     function say(msg) {
       if (asleep) return;
       if (text) text.textContent = msg;
       if (bubble) bubble.classList.add("visible");
+      speak(msg);
     }
     function hide() {
       if (bubble) bubble.classList.remove("visible");
+      if (canSpeak) { try { speechSynthesis.cancel(); } catch (e) {} }
     }
+
+    // browsers block audio until the first user gesture — once the visitor
+    // interacts anywhere, voice the greeting if it hasn't been heard yet
+    const unlockVoice = () => {
+      if (!spokenOnce && !muted && bubble && bubble.classList.contains("visible") && text) {
+        speak(text.textContent);
+      }
+    };
+    on(document, "pointerdown", unlockVoice, { once: true });
 
     // greet: a little wave shortly after arriving
     if (!prefersReduced) {
@@ -622,12 +695,19 @@
       e.stopPropagation();
       muted = !muted;
       muteBtn.textContent = muted ? "🔇" : "🔊";
+      try { localStorage.setItem("ar-voice", muted ? "off" : "on"); } catch (err) {}
+      if (muted && canSpeak) { try { speechSynthesis.cancel(); } catch (err) {} }
+      else if (!muted && text) speak(text.textContent);
     });
     on(sleepBtn, "click", (e) => {
       e.stopPropagation();
       asleep = !asleep;
       widget.classList.toggle("sleeping", asleep);
-      if (asleep) { hide(); spawnZ(); }
+      if (asleep) {
+        hide();
+        spawnZ();
+        if (canSpeak) { try { speechSynthesis.cancel(); } catch (err) {} }
+      }
     });
 
     function spawnZ() {

@@ -71,13 +71,21 @@ No GitHub link is used — add one to the footer socials if you create a profile
 The site ships an expressive-but-classy animation layer, fully additive (works
 identically with JS off, honors `prefers-reduced-motion`):
 
-- Opening stamp intro on the home page, once per session (`#nointro` skips it).
-- Hero name letters stamp in; sticky notes drift with scroll parallax.
-- 3D cursor tilt on project cards, magnetic buttons, scroll progress bar.
-- Stats count up in view; timeline cards sway on their pins; marker highlights
-  sweep in; skill tags pop in staggered; ticker pauses on hover.
+- Opening stamp intro on the home page, every visit, ending in a confetti
+  shower (`#nointro` in the URL skips it; click anywhere to skip).
+- Hero name letters stamp in; sticky notes idle-bob and drift with scroll
+  parallax; hand-drawn pen doodles float around the hero.
+- 3D cursor tilt on project cards, magnetic buttons, scroll progress bar,
+  cascading work-grid reveals.
+- Stats count up in view with a pen-circle pop; timeline cards sway on their
+  pins; marker highlights sweep in; skill tags pop in staggered; ticker
+  pauses on hover; nav links pop on hover.
 - Paper confetti on the 1st-place achievement cards and on contact-form send.
-- The mascot waves on arrival and blinks idly.
+- Sparky the mascot **speaks its lines** via the browser's speech synthesis
+  (Web Speech API — no audio files). The 🔊 button on the bubble mutes it and
+  the choice persists in localStorage. Browsers block audio until the first
+  click/tap on the page, so the greeting is voiced after the first interaction.
+- The mascot also waves on arrival and blinks idly.
 
 ## Notes
 
