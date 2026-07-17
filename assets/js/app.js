@@ -236,7 +236,7 @@
     const lines = [
       "Hi, I'm Sparky! Let's explore Arahan's work together.",
       "He's built brands, ventures and a lot of content. 🚀",
-      "Curious about Offbeat Origins? Check the Work page.",
+      "Curious about Off-side Origins? Check the Work page.",
       "Marketing, operations, venture building — pick a lane.",
       "Tip: you can drag those sticky notes around. ↗",
       "Want the full story? The About page has it.",
