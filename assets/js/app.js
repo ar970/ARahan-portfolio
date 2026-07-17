@@ -175,10 +175,8 @@
         })
       );
     }
-    // expandable cards: show description on click
-    document.querySelectorAll(".works-archive .completed-card").forEach((card) =>
-      on(card, "click", () => card.classList.toggle("open"))
-    );
+    // work cards: click opens a pop-out modal with the full details
+    projectModal();
     // filters
     const filters = document.querySelectorAll(".filter[data-filter]");
     if (!filters.length) return;
@@ -192,6 +190,89 @@
         });
       })
     );
+  }
+
+  /* ---------- work cards: pop-out project modal ---------- */
+  function projectModal() {
+    const modal = document.getElementById("project-modal");
+    const cards = document.querySelectorAll(".works-archive .completed-card");
+    if (!modal || !cards.length) return;
+
+    const card = modal.querySelector(".project-modal-card");
+    const cover = document.getElementById("modal-cover");
+    const number = document.getElementById("modal-number");
+    const coverTitle = document.getElementById("modal-cover-title");
+    const coverMeta = document.getElementById("modal-cover-meta");
+    const title = document.getElementById("modal-title");
+    const desc = document.getElementById("modal-desc");
+    const tags = document.getElementById("modal-tags");
+    const footer = document.getElementById("modal-footer");
+    let lastFocused = null;
+
+    function openFrom(source) {
+      const shot = source.querySelector(".project-shot-placeholder");
+      const copy = source.querySelector(".completed-card-copy");
+      if (!shot || !copy) return;
+
+      const accent = shot.style.getPropertyValue("--project-accent") || "";
+      cover.style.setProperty("--modal-accent", accent || "var(--sticky)");
+      number.textContent = shot.querySelector("span") ? shot.querySelector("span").textContent : "";
+      coverTitle.textContent = shot.querySelector("strong") ? shot.querySelector("strong").textContent : "";
+      coverMeta.textContent = shot.querySelector("small") ? shot.querySelector("small").textContent : "";
+
+      title.textContent = copy.querySelector("h3") ? copy.querySelector("h3").textContent : "";
+      const p = copy.querySelector(".card-details p");
+      desc.textContent = p ? p.textContent : "";
+
+      tags.innerHTML = "";
+      copy.querySelectorAll(".card-details .process-tags span").forEach((s) => {
+        const span = document.createElement("span");
+        span.textContent = s.textContent;
+        tags.appendChild(span);
+      });
+
+      footer.innerHTML = "";
+      const link = copy.querySelector(":scope > .completed-link");
+      if (link) {
+        link.querySelectorAll("span").forEach((s) => {
+          const span = document.createElement("span");
+          span.textContent = s.textContent;
+          footer.appendChild(span);
+        });
+      }
+
+      lastFocused = document.activeElement;
+      modal.classList.add("open");
+      modal.setAttribute("aria-hidden", "false");
+      document.body.classList.add("modal-open");
+      const closeBtn = modal.querySelector(".project-modal-close");
+      if (closeBtn) closeBtn.focus();
+    }
+
+    function close() {
+      modal.classList.remove("open");
+      modal.setAttribute("aria-hidden", "true");
+      document.body.classList.remove("modal-open");
+      if (lastFocused && lastFocused.focus) lastFocused.focus();
+    }
+
+    cards.forEach((c) => {
+      on(c, "click", () => openFrom(c));
+      on(c, "keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          openFrom(c);
+        }
+      });
+      if (!c.hasAttribute("tabindex")) c.setAttribute("tabindex", "0");
+      c.setAttribute("role", "button");
+    });
+
+    modal.querySelectorAll("[data-modal-close]").forEach((el) => on(el, "click", close));
+    on(card, "click", (e) => e.stopPropagation());
+    on(document, "keydown", (e) => {
+      if (e.key === "Escape" && modal.classList.contains("open")) close();
+    });
   }
 
   /* ---------- contact form (front-end only) ---------- */
