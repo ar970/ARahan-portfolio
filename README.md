@@ -66,6 +66,19 @@ No GitHub link is used — add one to the footer socials if you create a profile
 3. Framework preset: **Other** · Build command: *(none)* · Output directory: `./`
 4. Deploy. Vercel serves the static files directly.
 
+## Motion layer
+
+The site ships an expressive-but-classy animation layer, fully additive (works
+identically with JS off, honors `prefers-reduced-motion`):
+
+- Opening stamp intro on the home page, once per session (`#nointro` skips it).
+- Hero name letters stamp in; sticky notes drift with scroll parallax.
+- 3D cursor tilt on project cards, magnetic buttons, scroll progress bar.
+- Stats count up in view; timeline cards sway on their pins; marker highlights
+  sweep in; skill tags pop in staggered; ticker pauses on hover.
+- Paper confetti on the 1st-place achievement cards and on contact-form send.
+- The mascot waves on arrival and blinks idly.
+
 ## Notes
 
 - Fonts (Archivo Black, Lora, Caveat, IBM Plex Mono) load from Google Fonts.

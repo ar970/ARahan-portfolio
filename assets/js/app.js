@@ -12,6 +12,7 @@
   document.addEventListener("DOMContentLoaded", init);
 
   function init() {
+    introOverlay();
     setYear();
     setActiveNav();
     mobileNav();
@@ -21,6 +22,270 @@
     worksControls();
     contactForm();
     mascot();
+    heroLetters();
+    scrollProgress();
+    parallaxStickies();
+    tiltCards();
+    magneticButtons();
+    countUpStats();
+    staggerTags();
+    sweepMarks();
+    celebrateFirsts();
+  }
+
+  /* ---------- opening stamp intro (home, once per session) ---------- */
+  function introOverlay() {
+    const html = document.documentElement;
+    const isHome = !!document.querySelector(".home-page");
+    let seen = "";
+    try { seen = sessionStorage.getItem("ar-intro") || ""; } catch (e) { seen = "1"; }
+    if (!isHome || seen || prefersReduced || location.hash === "#nointro") {
+      html.classList.add("intro-done");
+      return;
+    }
+    try { sessionStorage.setItem("ar-intro", "1"); } catch (e) {}
+
+    const ov = document.createElement("div");
+    ov.className = "intro-overlay grid-paper";
+    const word = (text, cls, offset) =>
+      '<div class="intro-word ' + (cls || "") + '">' +
+      text.split("").map((c, j) => '<span style="--i:' + (j + offset) + '">' + c + "</span>").join("") +
+      "</div>";
+    ov.innerHTML =
+      word("ARAHAN", "", 0) +
+      word("SINGH.", "intro-word-accent", 6) +
+      '<p class="intro-note">marketing · ops · ventures</p>';
+    document.body.appendChild(ov);
+
+    let finished = false;
+    const finish = () => {
+      if (finished) return;
+      finished = true;
+      html.classList.add("intro-done");
+      ov.classList.add("done");
+      setTimeout(() => ov.remove(), 800);
+    };
+    on(ov, "click", finish);
+    setTimeout(finish, 2050);
+  }
+
+  /* ---------- hero headline: letters stamp in one by one ---------- */
+  function heroLetters() {
+    const h1 = document.querySelector(".home-hero h1");
+    if (!h1 || prefersReduced) return;
+    let i = 0;
+    (function wrap(node) {
+      Array.prototype.slice.call(node.childNodes).forEach((child) => {
+        if (child.nodeType === 3) {
+          const frag = document.createDocumentFragment();
+          child.textContent.split("").forEach((c) => {
+            if (!c.trim()) {
+              frag.appendChild(document.createTextNode(c));
+            } else {
+              const s = document.createElement("span");
+              s.className = "ch";
+              s.style.setProperty("--i", i++);
+              s.textContent = c;
+              frag.appendChild(s);
+            }
+          });
+          node.replaceChild(frag, child);
+        } else if (child.nodeType === 1 && child.tagName !== "SVG") {
+          wrap(child);
+        }
+      });
+    })(h1);
+  }
+
+  /* ---------- top scroll progress bar ---------- */
+  function scrollProgress() {
+    const bar = document.createElement("div");
+    bar.id = "scroll-progress";
+    document.body.appendChild(bar);
+    let ticking = false;
+    const update = () => {
+      const h = document.documentElement;
+      const max = h.scrollHeight - h.clientHeight;
+      bar.style.transform = "scaleX(" + (max > 0 ? h.scrollTop / max : 0) + ")";
+    };
+    on(window, "scroll", () => {
+      if (!ticking) {
+        requestAnimationFrame(() => { update(); ticking = false; });
+        ticking = true;
+      }
+    }, { passive: true });
+    update();
+  }
+
+  /* ---------- hero sticky notes drift on scroll ---------- */
+  function parallaxStickies() {
+    if (prefersReduced || !finePointer) return;
+    const notes = document.querySelectorAll(".home-hero .sticky");
+    if (!notes.length) return;
+    const factors = [0.055, -0.04, 0.085];
+    let ticking = false;
+    on(window, "scroll", () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          const y = window.scrollY;
+          notes.forEach((n, i) => {
+            if (!n.classList.contains("dragging")) {
+              n.style.transform = "translateY(" + (y * factors[i % 3]).toFixed(1) + "px)";
+            }
+          });
+          ticking = false;
+        });
+        ticking = true;
+      }
+    }, { passive: true });
+  }
+
+  /* ---------- 3D tilt on project cards ---------- */
+  function tiltCards() {
+    if (prefersReduced || !finePointer) return;
+    document.querySelectorAll(".completed-card, .project-card").forEach((card) => {
+      let raf = null;
+      on(card, "mousemove", (e) => {
+        if (raf) return;
+        raf = requestAnimationFrame(() => {
+          const r = card.getBoundingClientRect();
+          const px = (e.clientX - r.left) / r.width - 0.5;
+          const py = (e.clientY - r.top) / r.height - 0.5;
+          card.style.transform =
+            "perspective(950px) rotateX(" + (-py * 4.5).toFixed(2) + "deg) rotateY(" +
+            (px * 5.5).toFixed(2) + "deg) translateY(-4px)";
+          raf = null;
+        });
+      });
+      on(card, "mouseleave", () => { card.style.transform = ""; });
+    });
+  }
+
+  /* ---------- magnetic buttons ---------- */
+  function magneticButtons() {
+    if (prefersReduced || !finePointer) return;
+    document.querySelectorAll(".button, .circle-link").forEach((el) => {
+      on(el, "mousemove", (e) => {
+        const r = el.getBoundingClientRect();
+        const dx = (e.clientX - (r.left + r.width / 2)) / r.width;
+        const dy = (e.clientY - (r.top + r.height / 2)) / r.height;
+        el.style.transform = "translate(" + (dx * 10).toFixed(1) + "px," + (dy * 7).toFixed(1) + "px)";
+      });
+      on(el, "mouseleave", () => { el.style.transform = ""; });
+    });
+  }
+
+  /* ---------- stats count up when scrolled into view ---------- */
+  function countUpStats() {
+    const nums = document.querySelectorAll(".stats-row strong");
+    if (!nums.length || prefersReduced || !("IntersectionObserver" in window)) return;
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((en) => {
+        if (!en.isIntersecting) return;
+        io.unobserve(en.target);
+        const el = en.target;
+        const m = el.textContent.trim().match(/^(\d+)(.*)$/);
+        if (!m) return;
+        const target = +m[1], suffix = m[2], t0 = performance.now(), dur = 1100;
+        (function tick(t) {
+          const p = Math.min(1, (t - t0) / dur);
+          const ease = 1 - Math.pow(1 - p, 3);
+          el.textContent = Math.round(target * ease) + suffix;
+          if (p < 1) requestAnimationFrame(tick);
+        })(t0);
+      });
+    }, { threshold: 0.5 });
+    nums.forEach((n) => io.observe(n));
+  }
+
+  /* ---------- skill tags pop in with stagger ---------- */
+  function staggerTags() {
+    if (prefersReduced || !("IntersectionObserver" in window)) return;
+    const groups = document.querySelectorAll(
+      ".process-tags:not(#modal-tags), .ai-models, .ticket-tags"
+    );
+    if (!groups.length) return;
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((en) => {
+        if (en.isIntersecting) {
+          en.target.classList.add("pop-go");
+          io.unobserve(en.target);
+        }
+      });
+    }, { threshold: 0.35 });
+    groups.forEach((g) => {
+      g.classList.add("pop-set");
+      g.querySelectorAll("span").forEach((s, i) => {
+        s.style.transitionDelay = i * 45 + "ms";
+      });
+      io.observe(g);
+    });
+  }
+
+  /* ---------- marker-highlight sweep on <mark> ---------- */
+  function sweepMarks() {
+    if (prefersReduced || !("IntersectionObserver" in window)) return;
+    const marks = document.querySelectorAll("main mark");
+    if (!marks.length) return;
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((en) => {
+        if (en.isIntersecting) {
+          en.target.classList.add("sweep");
+          io.unobserve(en.target);
+        }
+      });
+    }, { threshold: 0.6 });
+    marks.forEach((m) => {
+      m.classList.add("sweep-init");
+      io.observe(m);
+    });
+  }
+
+  /* ---------- paper confetti ---------- */
+  function confettiBurst(x, y) {
+    if (prefersReduced || !("animate" in Element.prototype)) return;
+    const colors = ["#fff176", "#b3e5fc", "#f8bbd0", "#c8e6c9", "#ff6b2b", "#1565c0"];
+    for (let i = 0; i < 20; i++) {
+      const p = document.createElement("i");
+      p.className = "confetti-bit";
+      p.style.left = x + "px";
+      p.style.top = y + "px";
+      p.style.background = colors[i % colors.length];
+      const w = 6 + Math.random() * 6;
+      p.style.width = w + "px";
+      p.style.height = w * 0.62 + "px";
+      document.body.appendChild(p);
+      const ang = Math.random() * Math.PI * 2;
+      const v = 60 + Math.random() * 130;
+      const dx = Math.cos(ang) * v;
+      const dy = Math.sin(ang) * v - 90;
+      p.animate(
+        [
+          { transform: "translate(0,0) rotate(0deg)", opacity: 1 },
+          { transform: "translate(" + dx + "px," + (dy + 190) + "px) rotate(" + (Math.random() * 720 - 360) + "deg)", opacity: 0 }
+        ],
+        { duration: 950 + Math.random() * 500, easing: "cubic-bezier(.2,.7,.3,1)" }
+      ).onfinish = () => p.remove();
+    }
+  }
+
+  /* ---------- confetti on the 1st-place achievement cards ---------- */
+  function celebrateFirsts() {
+    if (prefersReduced || !("IntersectionObserver" in window)) return;
+    const cards = Array.prototype.filter.call(
+      document.querySelectorAll(".finding-grid article"),
+      (a) => /1st/i.test((a.querySelector("span") || {}).textContent || "")
+    );
+    if (!cards.length) return;
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((en) => {
+        if (!en.isIntersecting) return;
+        io.unobserve(en.target);
+        const r = en.target.getBoundingClientRect();
+        confettiBurst(r.right - 50, r.top + 45);
+      });
+    }, { threshold: 0.55 });
+    cards.forEach((c) => io.observe(c));
   }
 
   /* ---------- footer year ---------- */
@@ -302,6 +567,8 @@
       form.classList.add("submitted");
       const note = form.querySelector(".success-note");
       if (note) note.classList.add("visible");
+      const r = form.getBoundingClientRect();
+      confettiBurst(r.left + r.width / 2, r.top + r.height / 3);
     });
   }
 
@@ -336,6 +603,12 @@
     }
     function hide() {
       if (bubble) bubble.classList.remove("visible");
+    }
+
+    // greet: a little wave shortly after arriving
+    if (!prefersReduced) {
+      setTimeout(() => widget.classList.add("greet"), 900);
+      setTimeout(() => widget.classList.remove("greet"), 4200);
     }
 
     setTimeout(() => say(lines[0]), 1400);

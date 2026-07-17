@@ -4599,3 +4599,196 @@ body.modal-open {
   .project-modal-body { padding: 26px 22px; }
   .project-modal-cover { min-height: 150px; padding: 22px; }
 }
+
+/* ============================================================
+   Expressive motion layer (Arahan build)
+   All effects respect prefers-reduced-motion and are additive —
+   the page works identically with JS disabled.
+   ============================================================ */
+
+/* --- opening stamp intro --- */
+.intro-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--bg);
+  transition: transform 0.7s cubic-bezier(0.75, 0, 0.2, 1);
+  will-change: transform;
+  cursor: pointer;
+}
+
+.intro-overlay.done {
+  transform: translateY(-101%);
+  box-shadow: 0 40px 80px rgba(28, 25, 23, 0.35);
+}
+
+.intro-word {
+  font: 400 clamp(56px, 10vw, 120px) / 0.9 var(--display);
+  letter-spacing: -0.06em;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+.intro-word span {
+  display: inline-block;
+  opacity: 0;
+  animation: intro-stamp 0.5s cubic-bezier(0.2, 1.4, 0.3, 1) forwards;
+  animation-delay: calc(var(--i) * 55ms + 120ms);
+}
+
+.intro-word-accent span {
+  color: var(--accent);
+}
+
+@keyframes intro-stamp {
+  0%   { opacity: 0; transform: scale(2.2) rotate(7deg); }
+  55%  { opacity: 1; transform: scale(0.92) rotate(-2deg); }
+  100% { opacity: 1; transform: scale(1) rotate(0deg); }
+}
+
+.intro-note {
+  margin: 22px 0 0;
+  color: var(--pen);
+  font: 600 22px var(--hand);
+  rotate: -2deg;
+  opacity: 0;
+  animation: intro-note-in 0.5s 1s forwards;
+}
+
+@keyframes intro-note-in {
+  to { opacity: 1; }
+}
+
+/* --- hero headline letters stamp in after the intro --- */
+.home-hero h1 .ch {
+  display: inline-block;
+  color: inherit; /* letter spans must not catch the h1>span accent rule */
+}
+
+html.intro-done .home-hero h1 .ch {
+  animation: ch-stamp 0.55s cubic-bezier(0.2, 1.4, 0.3, 1) backwards;
+  animation-delay: calc(var(--i) * 50ms + 180ms);
+}
+
+@keyframes ch-stamp {
+  0%   { opacity: 0; transform: scale(1.7) rotate(5deg); }
+  60%  { opacity: 1; transform: scale(0.93) rotate(-1.5deg); }
+  100% { opacity: 1; transform: none; }
+}
+
+/* --- top scroll progress bar --- */
+#scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  z-index: 80;
+  background: linear-gradient(90deg, var(--accent), var(--highlight));
+  transform: scaleX(0);
+  transform-origin: left;
+  pointer-events: none;
+}
+
+/* --- timeline cards sway gently on their pins --- */
+@media (prefers-reduced-motion: no-preference) {
+  .milestone {
+    transform-origin: 50% 12px;
+    animation: milestone-sway 5.6s ease-in-out infinite alternate;
+  }
+  .milestone:nth-child(odd) {
+    animation-duration: 6.4s;
+    animation-delay: -1.3s;
+  }
+  @keyframes milestone-sway {
+    from { transform: rotate(0.7deg); }
+    to   { transform: rotate(-0.7deg); }
+  }
+}
+
+/* --- ticker pauses on hover --- */
+.ticker:hover .ticker-track {
+  animation-play-state: paused;
+}
+
+/* --- skill tags pop in with stagger + playful hover --- */
+.pop-set span {
+  opacity: 0;
+  transform: translateY(9px) scale(0.85);
+  transition: opacity 0.45s ease, transform 0.45s cubic-bezier(0.2, 1.4, 0.3, 1);
+}
+
+.pop-go span {
+  opacity: 1;
+  transform: none;
+}
+
+.process-tags span,
+.ai-models span {
+  transition: opacity 0.45s ease, transform 0.45s cubic-bezier(0.2, 1.4, 0.3, 1),
+    background-color 0.18s ease, rotate 0.18s ease, border-color 0.18s ease;
+}
+
+.process-tags span:hover {
+  rotate: -2deg;
+  background: var(--highlight);
+  border-color: var(--ink);
+}
+
+/* --- marker-highlight sweeps across on scroll --- */
+mark.sweep-init {
+  background-color: transparent;
+  background-image: linear-gradient(var(--highlight), var(--highlight));
+  background-repeat: no-repeat;
+  background-size: 0% 100%;
+}
+
+mark.sweep-init.sweep {
+  background-size: 100% 100%;
+  transition: background-size 0.8s 0.15s cubic-bezier(0.6, 0, 0.2, 1);
+}
+
+.sticky-pink mark.sweep-init {
+  background-image: linear-gradient(rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.7));
+}
+
+/* --- paper confetti bits --- */
+.confetti-bit {
+  position: fixed;
+  z-index: 9999;
+  pointer-events: none;
+  border-radius: 1px;
+  box-shadow: 0 1px 2px rgba(28, 25, 23, 0.2);
+}
+
+/* --- mascot: idle blink + greeting wave --- */
+.mascot-svg .eye {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: eye-blink 4.6s infinite;
+}
+
+@keyframes eye-blink {
+  0%, 90%, 100% { transform: scaleY(1); }
+  93%           { transform: scaleY(0.12); }
+  96%           { transform: scaleY(1); }
+}
+
+.mascot-widget.greet .mascot-left-arm {
+  animation: left-arm-wave 1.4s ease-in-out 2;
+  transform-origin: 65px 148px;
+}
+
+/* --- reduced motion: switch the extras off --- */
+@media (prefers-reduced-motion: reduce) {
+  .intro-overlay,
+  #scroll-progress,
+  .confetti-bit { display: none !important; }
+  .pop-set span { opacity: 1; transform: none; }
+  mark.sweep-init { background-size: 100% 100%; }
+  .home-hero h1 .ch { animation: none; }
+}
